@@ -11,9 +11,9 @@ create table czlonkowie(
 
 create table Zespoly(
     TEAM_ID                 INTEGER UNIQUE NOT NULL,
-    nazwa                   VARCHAR(32) NOT NULL,
-    uczelnia                VARCHAR(32) NOT NULL,
-    kraj                    VARCHAR(32) NOT NULL,
+    nazwa                   TEXT NOT NULL,
+    uczelnia                TEXT NOT NULL,
+    kraj                    TEXT NOT NULL,
     szef_zespolu            INTEGER NOT NULL,
     -- CONSTRAINT szef_fk      FOREIGN KEY (szef_zespolu) REFERENCES czlonkowie(czlonek_ID),
     CONSTRAINT team_pk      PRIMARY KEY(TEAM_ID)

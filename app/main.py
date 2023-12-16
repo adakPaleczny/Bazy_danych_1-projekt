@@ -22,25 +22,27 @@ class DatabaseViewer:
         self.members_button = tk.Button(self.root, text="MEMBERS", command=self.display_member)
 
         # Grid layout for connection widgets
-        self.teams_button.grid(row=5, column=0, columnspan=2, pady=10)
-        self.members_button.grid(row=5, column=1, columnspan=2, pady=10)
+        self.teams_button.grid(row=5, column=0, columnspan=1, pady=10)
+        self.members_button.grid(row=5, column=1, columnspan=1, pady=10)
 
     def create_teams_display_widgets(self):
         # Treeview for displaying data
         self.tree = ttk.Treeview(self.root)
-        self.tree["columns"] = ("Nazwa", "Uczelnia", "Kraj")  # Replace with your actual column names
+        self.tree["columns"] = ("Nazwa", "Uczelnia", "Kraj", "Liczba_czlonkow")  # Replace with your actual column names
 
         # Configure columns
         self.tree.column("#0", width=0, stretch=tk.NO)  # Hidden ID column
-        self.tree.column("Nazwa",anchor=tk.W, width=200)  # Hidden ID column
-        self.tree.column("Uczelnia", anchor=tk.W, width=300)
+        self.tree.column("Nazwa",anchor=tk.W, width=300)  # Hidden ID column
+        self.tree.column("Uczelnia", anchor=tk.W, width=200)
         self.tree.column("Kraj", anchor=tk.W, width=100)
+        self.tree.column("Liczba_czlonkow", anchor=tk.W, width=160) 
 
         # Add column headings
         self.tree.heading("#0", text="", anchor=tk.W)
         self.tree.heading("Nazwa", text="Team", anchor=tk.W)
         self.tree.heading("Uczelnia", text="Uczelnia", anchor=tk.W)
         self.tree.heading("Kraj", text="Kraj", anchor=tk.W)
+        self.tree.heading("Liczba_czlonkow", text="Ilość członków", anchor=tk.W)
 
         # Grid layout for Treeview
         self.tree.grid(row=6, column=0, columnspan=3, padx=10, pady=10)
@@ -69,9 +71,9 @@ class DatabaseViewer:
         self.tree_team_members.grid(row=7, column=0, columnspan=2, padx=10, pady=10)
 
         self.tree_team_members.grid_forget()
-
-    
+  
     def create_member_insert(self):
+        
         # Entry Widgets for data insertion
         self.member_id_label = tk.Label(self.root, text="Member ID")
         self.member_id_entry = tk.Entry(self.root)
@@ -99,9 +101,7 @@ class DatabaseViewer:
         self.member_team_entry.grid(row=11, column=1, padx=5, pady=5)
         self.member_role_label.grid(row=12, column=0, padx=5, pady=5)
         self.member_role_entry.grid(row=12, column=1, padx=5, pady=5)
-        self.insert_button.grid(row=13, column=3, padx=5, pady=5)
-
-        
+        self.insert_button.grid(row=13, column=0, padx=5, pady=5)
 
     def insert_member(self):
         # Retrieve values from entry widgets
@@ -167,7 +167,7 @@ class DatabaseViewer:
         self.tree.grid(row=6, column=0, columnspan=2, padx=10, pady=10)
         self.connect_to_database()
          # Execute a query to retrieve data from the table (replace with your query)
-        self.cursor.execute("SELECT nazwa, uczelnia, kraj FROM projekt.zespoly")
+        self.cursor.execute("SELECT z.nazwa, z.uczelnia, z.kraj, COUNT(c.czlonek_id) FROM projekt.zespoly z JOIN projekt.czlonkowie c on c.team_id = z.team_id GROUP BY nazwa, uczelnia, kraj;")
         rows = self.cursor.fetchall()
 
         # Clear existing data in the Treeview

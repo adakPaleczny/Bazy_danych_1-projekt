@@ -2,7 +2,14 @@ insert into projekt.bolidy(Numer_startowy, TEAM_ID, typ, nazwa, wynik_overal) va
             (43, 1, 'EV', 'LEM',1),
             (23, 3, 'EV', 'ELECTRIC_RUN',4),
             (8, 2, 'EV', 'ELE2.0',2),
-            (4, 4, 'EV', 'RTE2.0',3);
+            (4, 4, 'EV', 'RTE2.0',3),
+            (128, 11, 'EV', 'Velocity Vortex', 5),
+            (132, 50, 'CV', 'Quantum Racer', 6),
+            (95, 8, 'EV', 'Turbo Titan', 7),
+            (80, 2, 'EV', 'Electra Blitz', 8),
+            (12, 38, 'CV', 'Fusion Flash', 9),
+            (140, 40, 'EV', 'Sonic Surge', 10),
+            (199, 41, 'EV', 'Cyclone Charger', 11);
 
 insert into projekt.zespoly
         values (1, 'AGH Racing', 'AGH Cracow', 'PL', 1),
@@ -60,3 +67,47 @@ insert into projekt.czlonkowie
                 (40, 'Riera', 'Caroll', 'Member Steering', 10),
                 (41, 'Protasio', 'Dinis', 'DPM Accumulator', 6),
                 (42, 'Yasser', 'Rod', 'PM Aerodynamics', 7);
+
+insert into projekt.pola_namiotowe values
+                (1,  3),
+                (2,  7),
+                (3,  2),
+                (4,  4),
+                (5,  6),
+                (6,  1),
+                (7,  5),
+                (8,  8),
+                (9,  2),
+                (10,  7),
+                (11,  1),
+                (12,  6),
+                (13,  3),
+                (14,  5),
+                (15,  8),
+                (16,  4),
+                (17,  6),
+                (18,  3),
+                (19,  7),
+                (20,  2);
+
+insert into projekt.nocleg values
+                (1, 'Elmwood Avenue',  456, 1),
+                (2, 'Pine Lane',  789, 2),
+                (3, 'Cedar Court',  234, 3),
+                (4, 'Birch Street',  567, 4),
+                (5, 'Maple Drive',  890, 5),
+                (6, 'Oak Avenue',  123, 6),
+                (7, 'Spruce Lane',  101, 7),
+                (8, 'Redwood Road',  888, 8),
+                (9, 'Sycamore Drive',  333, 9),
+                (10,'Willow Lane',  222, 10),
+                (11,'Aspen Avenue',  444, 11),
+                (12,'Chestnut Road',  555, 12),
+                (13,'Sequoia Lane',  666, 13),
+                (14,'Poplar Street',  777, 14),
+                (15,'Fir Drive',  676, 15),
+                (16,'Pinecone Lane',  999, 16),
+                (17,'Oakwood Avenue',  121, 17),
+                (18,'Cedar Street',  343, 18),
+                (19,'Spruce Lane',  565, 19),
+                (20,'Maple Road',  787, 20);

@@ -15,6 +15,7 @@ class DatabaseViewer:
         self.create_teams_display_widgets()
         self.create_members_display_widgets()
         self.create_member_insert()
+        self.create_search_widgets()
 
     def create_connection_widgets(self):
         # Connect Button
@@ -68,12 +69,13 @@ class DatabaseViewer:
 
 
         # Grid layout for Treeviews
-        self.tree_team_members.grid(row=7, column=0, columnspan=2, padx=10, pady=10)
+        self.tree_team_members.grid(row=6, column=0, columnspan=3, padx=10, pady=10)
 
         self.tree_team_members.grid_forget()
   
     def create_member_insert(self):
-        
+        self.insert_info_label =  tk.Label(self.root, text="Rejstracja nowych członków: ")
+        self.insert_info_label.config(font=('Helvatical bold',20))
         # Entry Widgets for data insertion
         self.member_id_label = tk.Label(self.root, text="Member ID")
         self.member_id_entry = tk.Entry(self.root)
@@ -91,6 +93,7 @@ class DatabaseViewer:
         self.insert_button = tk.Button(self.root, text="Insert Member", command=self.insert_member)
 
         # Grid layout for data insertion widgets
+        self.insert_info_label.grid(row=7, column=0, columnspan=2, pady=10)
         self.member_id_label.grid(row=8, column=0, padx=5, pady=5)
         self.member_id_entry.grid(row=8, column=1, padx=5, pady=5)
         self.member_name_label.grid(row=9, column=0, padx=5, pady=5)
@@ -102,6 +105,81 @@ class DatabaseViewer:
         self.member_role_label.grid(row=12, column=0, padx=5, pady=5)
         self.member_role_entry.grid(row=12, column=1, padx=5, pady=5)
         self.insert_button.grid(row=13, column=0, padx=5, pady=5)
+
+    def create_search_widgets(self):
+        self.search_info_label =  tk.Label(self.root, text="Wyszkuja informacja dla członka:")
+        self.search_info_label.config(font=('Helvatical bold',20))
+        self.name_label = tk.Label(self.root, text="Wprowadź imie uczestnika: ")
+        self.name_entry = tk.Entry(self.root)
+        self.surname_label = tk.Label(self.root, text="Wprowadź nazwisko uczestnika: ")
+        self.surname_entry = tk.Entry(self.root)    
+
+        self.get_info_button = tk.Button(self.root, text="Wyszukaj", command=self.get_info)
+
+
+        self.search_info_label.grid(row=14, column=0, columnspan=2, pady=10)   
+        self.name_label.grid(row=15, column=0, padx=5, pady=5)
+        self.name_entry.grid(row=15, column=1, padx=5, pady=5)
+        self.surname_label.grid(row=16, column=0, padx=5, pady=5)
+        self.surname_entry.grid(row=16, column=1, padx=5, pady=5)
+        self.get_info_button.grid(row=17, column=0, padx=5, pady=5)
+
+        self.tree_member = ttk.Treeview(self.root)
+        self.tree_member["columns"] = ("Ulica", "Numer", "Numer pola namiotowego", "Lokatorzy")  # Replace with your actual column names
+
+        # Configure columns
+        self.tree_member.column("Ulica",anchor=tk.W, width=150)  # Hidden ID column
+        self.tree_member.column("Numer", anchor=tk.W, width=80)
+        self.tree_member.column("Numer pola namiotowego", anchor=tk.W, width=150)
+        self.tree_member.column("Lokatorzy", anchor=tk.W, width=360) 
+
+        # Add column headings
+        self.tree_member.heading("Ulica", text="Ulica", anchor=tk.W)
+        self.tree_member.heading("Numer", text="Numer", anchor=tk.W)
+        self.tree_member.heading("Numer pola namiotowego", text="Pole namiotowe", anchor=tk.W)
+        self.tree_member.heading("Lokatorzy", text="Lokatorzy", anchor=tk.W)
+
+        # Grid layout for Treeview
+        self.tree_member.grid(row=18, column=0, columnspan=3, padx=10, pady=10)
+
+    def get_info(self):
+        self.connect_to_database()
+        self.cursor.execute("SELECT czlonek_id FROM projekt.czlonkowie WHERE imie = %s and nazwisko = %s", (self.name_entry.get(),self.surname_entry.get(),))
+
+        id = self.cursor.fetchone()[0]
+
+        # Najpierw muszę wziąść członków z tabeli nocleg_czlonkow, a potem z tabeli nocleg
+        self.cursor.execute("SELECT nocleg_id, ulica, numer, numer_pola_namiotowego FROM projekt.nocleg WHERE czlonek_id = %s", (id,))
+        rows = self.cursor.fetchall()
+
+        nocleg_id, ulica, numer, numer_pola_namiotowego = rows
+
+        self.cursor.execute("SELECT czlonek_ID FROM projekt.nocleg_czlonkow WHERE nocleg_id = %s", (nocleg_id,))
+        czlonkowie = []
+        czlonkowie = self.cursor.fetchall()
+        
+        nazwa_czlonow = []
+        for czlonek in czlonkowie:
+            self.cursor.execute("SELECT imie, nazwisko FROM projekt.czlonkowie WHERE czlonek_id = %s", (czlonek,))
+            imie, nazwisko = self.cursor.fetchone()
+            nazwa_czlonow.append(imie + " " + nazwisko + ",")
+
+        # print(id)
+
+        # Clear existing data in the Treeview
+        for item in self.tree_member.get_children():
+            self.tree_member.delete(item)
+
+        # Insert retrieved data into the Treeview
+       
+        self.tree_member.insert("", "end", values=ulica)
+        self.tree_member.insert("", "end", values=numer)
+        self.tree_member.insert("", "end", values=numer_pola_namiotowego)    
+        self.tree_member.insert("", "end", values=nazwa_czlonow)    
+
+
+
+        self.close_database_connection()
 
     def insert_member(self):
         # Retrieve values from entry widgets
@@ -139,7 +217,7 @@ class DatabaseViewer:
 
     def display_member(self):
         self.tree.grid_forget()
-        self.tree_team_members.grid(row=7, column=0, columnspan=2, padx=10, pady=10)
+        self.tree_team_members.grid(row=6, column=0, columnspan=3, padx=10, pady=10)
 
         self.connect_to_database()
          # Execute a query to retrieve data from the table (replace with your query)
@@ -201,5 +279,6 @@ class DatabaseViewer:
 
 if __name__ == "__main__":
     root = tk.Tk()
+    # root.geometry("1200x800")
     app = DatabaseViewer(root)
     root.mainloop()

@@ -50,7 +50,9 @@ create table nocleg(
 
 
 create table nocleg_czlonkow(
-    nocleg_ID                      INTEGER NOT NULL REFERENCES nocleg(nocleg_ID),
-    czlonek_ID                     INTEGER NOT NULL REFERENCES czlonkowie(czlonek_ID),
-    CONSTRAINT nc_pk               PRIMARY KEY(nocleg_ID, czlonek_ID)
+    nocleg_ID                      INTEGER NOT NULL,
+    czlonek_ID                     INTEGER UNIQUE NOT NULL,
+    CONSTRAINT nc_pk               PRIMARY KEY(nocleg_ID, czlonek_ID),
+    CONSTRAINT nocleg_fk           FOREIGN KEY(nocleg_ID) REFERENCES nocleg(nocleg_ID),
+    CONSTRAINT czlonek_fk          FOREIGN KEY(czlonek_ID) REFERENCES czlonkowie(czlonek_ID)
 );

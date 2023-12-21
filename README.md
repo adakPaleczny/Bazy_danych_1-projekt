@@ -11,7 +11,7 @@ Aplikacja bazodanowa obsługująca zawody inżynierskie Formula Student Polska. 
 ## Zanim zaczniemy ...
 ### Wymagania:
 - Python 🐍
-- Linux
+- Linux 🖥️
 
 Instalowanie potrzebnych bibliotek:
 ``` bash

@@ -114,7 +114,7 @@ class DatabaseViewer:
         self.surname_label = tk.Label(self.root, text="Wprowadź nazwisko uczestnika: ")
         self.surname_entry = tk.Entry(self.root)    
 
-        self.get_info_button = tk.Button(self.root, text="Wyszukaj", command=self.get_info)
+        self.get_info_button = tk.Button(self.root, text="Nocleg", command=self.get_info_sleeping)
 
 
         self.search_info_label.grid(row=14, column=0, columnspan=2, pady=10)   
@@ -128,12 +128,14 @@ class DatabaseViewer:
         self.tree_member["columns"] = ("Ulica", "Numer", "Numer pola namiotowego", "Lokatorzy")  # Replace with your actual column names
 
         # Configure columns
+        self.tree_member.column("#0", width=0, stretch=tk.NO)  # Hidden MemberID column
         self.tree_member.column("Ulica",anchor=tk.W, width=150)  # Hidden ID column
         self.tree_member.column("Numer", anchor=tk.W, width=80)
-        self.tree_member.column("Numer pola namiotowego", anchor=tk.W, width=150)
-        self.tree_member.column("Lokatorzy", anchor=tk.W, width=360) 
+        self.tree_member.column("Numer pola namiotowego", anchor=tk.W, width=130)
+        self.tree_member.column("Lokatorzy", anchor=tk.W, width=380) 
 
         # Add column headings
+        self.tree_member.heading("#0", text="", anchor=tk.W)
         self.tree_member.heading("Ulica", text="Ulica", anchor=tk.W)
         self.tree_member.heading("Numer", text="Numer", anchor=tk.W)
         self.tree_member.heading("Numer pola namiotowego", text="Pole namiotowe", anchor=tk.W)
@@ -142,42 +144,29 @@ class DatabaseViewer:
         # Grid layout for Treeview
         self.tree_member.grid(row=18, column=0, columnspan=3, padx=10, pady=10)
 
-    def get_info(self):
+    def get_info_sleeping(self):
         self.connect_to_database()
-        self.cursor.execute("SELECT czlonek_id FROM projekt.czlonkowie WHERE imie = %s and nazwisko = %s", (self.name_entry.get(),self.surname_entry.get(),))
+        self.cursor.execute("SELECT nocleg_ID from projekt.nocleg_czlonkow n join projekt.czlonkowie c on c.czlonek_ID = n.czlonek_ID where c.imie = %s and c.nazwisko = %s", (self.name_entry.get(),self.surname_entry.get(),)) 
 
-        id = self.cursor.fetchone()[0]
+        nocleg_id = self.cursor.fetchone()[0]
 
-        # Najpierw muszę wziąść członków z tabeli nocleg_czlonkow, a potem z tabeli nocleg
-        self.cursor.execute("SELECT nocleg_id, ulica, numer, numer_pola_namiotowego FROM projekt.nocleg WHERE czlonek_id = %s", (id,))
-        rows = self.cursor.fetchall()
-
-        nocleg_id, ulica, numer, numer_pola_namiotowego = rows
-
-        self.cursor.execute("SELECT czlonek_ID FROM projekt.nocleg_czlonkow WHERE nocleg_id = %s", (nocleg_id,))
+        self.cursor.execute("SELECT c.imie, c.nazwisko from projekt.czlonkowie c join projekt.nocleg_czlonkow n on c.czlonek_ID = n.czlonek_ID WHERE nocleg_ID = %s", (nocleg_id,))
         czlonkowie = []
         czlonkowie = self.cursor.fetchall()
+
+        self.cursor.execute("SELECT ulica, numer, numer_pola_namiotowego FROM projekt.nocleg WHERE nocleg_id = %s", (nocleg_id,))
+        ulica, numer, numer_pola_namiotowego = self.cursor.fetchone()
         
-        nazwa_czlonow = []
-        for czlonek in czlonkowie:
-            self.cursor.execute("SELECT imie, nazwisko FROM projekt.czlonkowie WHERE czlonek_id = %s", (czlonek,))
-            imie, nazwisko = self.cursor.fetchone()
-            nazwa_czlonow.append(imie + " " + nazwisko + ",")
-
-        # print(id)
-
+        nazwy_czlonkow_table = [ nazwa[0]+ " " + nazwa[1] + "\n"  for nazwa in czlonkowie]
+        nazwy_czlonkow = "".join(nazwy_czlonkow_table)
+        nazwy_czlonkow = nazwy_czlonkow[:-2]
+        
         # Clear existing data in the Treeview
         for item in self.tree_member.get_children():
             self.tree_member.delete(item)
 
-        # Insert retrieved data into the Treeview
-       
-        self.tree_member.insert("", "end", values=ulica)
-        self.tree_member.insert("", "end", values=numer)
-        self.tree_member.insert("", "end", values=numer_pola_namiotowego)    
-        self.tree_member.insert("", "end", values=nazwa_czlonow)    
-
-
+        # Insert retrieved data into the Treeview       
+        self.tree_member.insert("", "end", values=[ulica, numer, numer_pola_namiotowego, nazwy_czlonkow])
 
         self.close_database_connection()
 

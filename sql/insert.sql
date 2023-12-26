@@ -4,12 +4,12 @@ insert into projekt.bolidy(Numer_startowy, TEAM_ID, typ, nazwa, wynik_overal) va
             (8, 2, 'EV', 'ELE2.0',2),
             (4, 4, 'EV', 'RTE2.0',3),
             (128, 11, 'EV', 'Velocity Vortex', 5),
-            (132, 50, 'CV', 'Quantum Racer', 6),
+            (132, 5, 'CV', 'Quantum Racer', 6),
             (95, 8, 'EV', 'Turbo Titan', 7),
-            (80, 2, 'EV', 'Electra Blitz', 8),
-            (12, 38, 'CV', 'Fusion Flash', 9),
-            (140, 40, 'EV', 'Sonic Surge', 10),
-            (199, 41, 'EV', 'Cyclone Charger', 11);
+            (80, 6, 'CV', 'Electra Blitz', 8),
+            (12, 10, 'CV', 'Fusion Flash', 9),
+            (140, 9, 'EV', 'Sonic Surge', 10),
+            (199, 7, 'CV', 'Cyclone Charger', 11);
 
 insert into projekt.zespoly
         values (1, 'AGH Racing', 'AGH Cracow', 'PL', 1),

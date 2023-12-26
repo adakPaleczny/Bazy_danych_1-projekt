@@ -24,7 +24,7 @@ alter table czlonkowie add TEAM_ID INTEGER REFERENCES Zespoly(TEAM_ID);
 
 create table bolidy(
     Numer_startowy          INTEGER UNIQUE NOT NULL,
-    TEAM_ID                 INTEGER NOT NULL,
+    TEAM_ID                 INTEGER UNIQUE NOT NULL,
     typ                     VARCHAR(10) NOT NULL,
     nazwa                   VARCHAR(32),
     wynik_overal            INTEGER not null,                 

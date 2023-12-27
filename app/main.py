@@ -8,10 +8,7 @@ class DatabaseViewer:
         self.root = root
         self.root.title("FS Poland Information System")
 
-        # Create and place widgets for connection
         self.create_button_widgets()
-
-        # Create and place widgets for data display
         self.create_teams_display_widgets()
         self.create_members_display_widgets()
         self.create_member_insert()
@@ -27,76 +24,19 @@ class DatabaseViewer:
         self.overall_button = tk.Button(self.root, text="OVERALL", command=self.display_results)
     
         self.overall_test = tk.Label(self.root, text="WYNIKI ZAWODÓW")
+        self.overall_test.config(font=('Helvatical bold',15))
 
+        self.info_label = tk.Label(self.root, text="INFORMACJE O ZESPOŁACH I CZŁONKACH")
+        self.info_label.config(font=('Helvatical bold',15))
 
         # Grid layout for connection widgets
+        self.info_label.grid(row=4, column=0, columnspan=1, pady=10)
         self.teams_button.grid(row=5, column=0, columnspan=1, pady=10)
         self.members_button.grid(row=5, column=1, columnspan=1, pady=10)
-        self.cv_button.grid(row=5, column=16, columnspan=1, pady=10)
-        self.ev_button.grid(row=5, column=17, columnspan=1, pady=10)
-        self.overall_button.grid(row=5, column=18, columnspan=1, pady=10)
-        self.overall_test.grid(row=5, column=15, columnspan=1, pady=10)
-
-    def create_results_widgets(self):
-        # Treeview for displaying data
-        self.tree_results = ttk.Treeview(self.root)
-        self.tree_results["columns"] = ("Wynik", "Zespol", "Numer_startowy", "Nazwa_samochodu")
-
-        # Configure columns
-        self.tree_results.column("#0", width=0, stretch=tk.NO) 
-        self.tree_results.column("Wynik", anchor=tk.W, width=150)
-        self.tree_results.column("Zespol", anchor=tk.W, width=280)
-        self.tree_results.column("Numer_startowy", anchor=tk.W, width=140)
-        self.tree_results.column("Nazwa_samochodu", anchor=tk.W, width=200)
-
-        # Add column headings
-        self.tree_results.heading("#0", text="", anchor=tk.W)
-        self.tree_results.heading("Wynik", text="Wynik", anchor=tk.W)
-        self.tree_results.heading("Zespol", text="Zespół", anchor=tk.W)
-        self.tree_results.heading("Numer_startowy", text="Numer startowy", anchor=tk.W)
-        self.tree_results.heading("Nazwa_samochodu", text="Nazwa samochodu", anchor=tk.W)
-
-        # Grid layout for Treeviews
-        self.tree_results.grid(row=6, column=15, columnspan=3, padx=10, pady=10)
-
-    def display_results(self):
-        self.connect_to_database()
-        self.cursor.execute("SELECT wynik, zespol, numer, bolid from projekt.wyniki")
-        rows = self.cursor.fetchall()
-
-        for row in self.tree_results.get_children():
-            self.tree_results.delete(row)
-
-        for row in rows:
-            self.tree_results.insert("", "end", values=row)
-
-        self.close_database_connection()
-
-    def display_cv_results(self):
-        self.connect_to_database()
-
-        self.cursor.execute("SELECT ROW_NUMBER() OVER (ORDER BY wynik) as wynik, zespol, numer, bolid FROM projekt.wyniki where typ = 'CV';")
-
-        for row in self.tree_results.get_children():
-            self.tree_results.delete(row)
-
-        for row in self.cursor.fetchall():
-            self.tree_results.insert("", "end", values=row)
-        
-        self.close_database_connection()
-
-    def display_ev_results(self):
-        self.connect_to_database()
-
-        self.cursor.execute("SELECT ROW_NUMBER() OVER (ORDER BY wynik) as wynik, zespol, numer, bolid FROM projekt.wyniki where typ = 'EV';")
-
-        for row in self.tree_results.get_children():
-            self.tree_results.delete(row)
-
-        for row in self.cursor.fetchall():
-            self.tree_results.insert("", "end", values=row)
-        
-        self.close_database_connection()
+        self.overall_test.grid(row=4, column=15, columnspan=1, pady=1)
+        self.cv_button.grid(row=5, column=15, columnspan=1, pady=1)
+        self.ev_button.grid(row=5, column=16, columnspan=1, pady=1)
+        self.overall_button.grid(row=5, column=17, columnspan=1, pady=1)
 
     def create_teams_display_widgets(self):
         # Treeview for displaying data
@@ -162,7 +102,7 @@ class DatabaseViewer:
 
 
         # Insert Button
-        self.insert_button = tk.Button(self.root, text="Insert Member", command=self.insert_member)
+        self.insert_button = tk.Button(self.root, text="Zarejstruj uczestnika", command=self.insert_member)
 
         # Grid layout for data insertion widgets
         self.insert_info_label.grid(row=7, column=0, columnspan=2, pady=10)
@@ -216,35 +156,27 @@ class DatabaseViewer:
         # Grid layout for Treeview
         self.tree_member.grid(row=18, column=0, columnspan=3, padx=10, pady=10)
 
-    def get_info_sleeping(self):
-        self.connect_to_database()
-        self.cursor.execute("SELECT nocleg_ID from projekt.nocleg_czlonkow n join projekt.czlonkowie c on c.czlonek_ID = n.czlonek_ID where c.imie = %s and c.nazwisko = %s", (self.name_entry.get(),self.surname_entry.get(),)) 
+    def create_results_widgets(self):
+        # Treeview for displaying data
+        self.tree_results = ttk.Treeview(self.root)
+        self.tree_results["columns"] = ("Wynik", "Zespol", "Numer_startowy", "Nazwa_samochodu")
 
-        nocleg_id_result = self.cursor.fetchone()
-        if not nocleg_id_result:
-            messagebox.showerror("Error", "Nie znaleziono takiego członka!")
-            return
-        
-        nocleg_id = nocleg_id_result[0]
+        # Configure columns
+        self.tree_results.column("#0", width=0, stretch=tk.NO) 
+        self.tree_results.column("Wynik", anchor=tk.W, width=150)
+        self.tree_results.column("Zespol", anchor=tk.W, width=280)
+        self.tree_results.column("Numer_startowy", anchor=tk.W, width=140)
+        self.tree_results.column("Nazwa_samochodu", anchor=tk.W, width=200)
 
-        self.cursor.execute("SELECT c.imie, c.nazwisko from projekt.czlonkowie c join projekt.nocleg_czlonkow n on c.czlonek_ID = n.czlonek_ID WHERE nocleg_ID = %s", (nocleg_id,))
-        czlonkowie = self.cursor.fetchall()
+        # Add column headings
+        self.tree_results.heading("#0", text="", anchor=tk.W)
+        self.tree_results.heading("Wynik", text="Wynik", anchor=tk.W)
+        self.tree_results.heading("Zespol", text="Zespół", anchor=tk.W)
+        self.tree_results.heading("Numer_startowy", text="Numer startowy", anchor=tk.W)
+        self.tree_results.heading("Nazwa_samochodu", text="Nazwa samochodu", anchor=tk.W)
 
-        self.cursor.execute("SELECT ulica, numer, numer_pola_namiotowego FROM projekt.nocleg WHERE nocleg_id = %s", (nocleg_id,))
-        ulica, numer, numer_pola_namiotowego = self.cursor.fetchone()
-        
-        nazwy_czlonkow_table = [ nazwa[0]+ " " + nazwa[1] + "\n"  for nazwa in czlonkowie]
-        nazwy_czlonkow = "".join(nazwy_czlonkow_table)
-        nazwy_czlonkow = nazwy_czlonkow[:-2]
-        
-        # Clear existing data in the Treeview
-        for item in self.tree_member.get_children():
-            self.tree_member.delete(item)
-
-        # Insert retrieved data into the Treeview       
-        self.tree_member.insert("", "end", values=[ulica, numer, numer_pola_namiotowego, nazwy_czlonkow])
-
-        self.close_database_connection()
+        # Grid layout for Treeviews
+        self.tree_results.grid(row=6, column=15, columnspan=3, padx=10, pady=10)
 
     def insert_member(self):
         # Retrieve values from entry widgets
@@ -300,11 +232,6 @@ class DatabaseViewer:
 
         self.close_database_connection()
 
-    def close_database_connection(self):
-        # Close the cursor and connection
-        self.cursor.close()
-        self.connection.close()
-
     def display_team(self):
         self.tree_team_members.grid_forget()
         self.tree.grid(row=6, column=0, columnspan=2, padx=10, pady=10)
@@ -320,6 +247,75 @@ class DatabaseViewer:
         # Insert retrieved data into the Treeview
         for row in rows:
             self.tree.insert("", "end", values=row)
+
+        self.close_database_connection()
+
+    def display_results(self):
+        self.connect_to_database()
+        self.cursor.execute("SELECT wynik, zespol, numer, bolid from projekt.wyniki")
+        rows = self.cursor.fetchall()
+
+        for row in self.tree_results.get_children():
+            self.tree_results.delete(row)
+
+        for row in rows:
+            self.tree_results.insert("", "end", values=row)
+
+        self.close_database_connection()
+
+    def display_cv_results(self):
+        self.connect_to_database()
+
+        self.cursor.execute("SELECT ROW_NUMBER() OVER (ORDER BY wynik) as wynik, zespol, numer, bolid FROM projekt.wyniki where typ = 'CV';")
+
+        for row in self.tree_results.get_children():
+            self.tree_results.delete(row)
+
+        for row in self.cursor.fetchall():
+            self.tree_results.insert("", "end", values=row)
+        
+        self.close_database_connection()
+
+    def display_ev_results(self):
+        self.connect_to_database()
+
+        self.cursor.execute("SELECT ROW_NUMBER() OVER (ORDER BY wynik) as wynik, zespol, numer, bolid FROM projekt.wyniki where typ = 'EV';")
+
+        for row in self.tree_results.get_children():
+            self.tree_results.delete(row)
+
+        for row in self.cursor.fetchall():
+            self.tree_results.insert("", "end", values=row)
+        
+        self.close_database_connection()
+
+    def get_info_sleeping(self):
+        self.connect_to_database()
+        self.cursor.execute("SELECT nocleg_ID from projekt.nocleg_czlonkow n join projekt.czlonkowie c on c.czlonek_ID = n.czlonek_ID where c.imie = %s and c.nazwisko = %s", (self.name_entry.get(),self.surname_entry.get(),)) 
+
+        nocleg_id_result = self.cursor.fetchone()
+        if not nocleg_id_result:
+            messagebox.showerror("Error", "Nie znaleziono takiego członka!")
+            return
+        
+        nocleg_id = nocleg_id_result[0]
+
+        self.cursor.execute("SELECT c.imie, c.nazwisko from projekt.czlonkowie c join projekt.nocleg_czlonkow n on c.czlonek_ID = n.czlonek_ID WHERE nocleg_ID = %s", (nocleg_id,))
+        czlonkowie = self.cursor.fetchall()
+
+        self.cursor.execute("SELECT ulica, numer, numer_pola_namiotowego FROM projekt.nocleg WHERE nocleg_id = %s", (nocleg_id,))
+        ulica, numer, numer_pola_namiotowego = self.cursor.fetchone()
+        
+        nazwy_czlonkow_table = [ nazwa[0]+ " " + nazwa[1] + "\n"  for nazwa in czlonkowie]
+        nazwy_czlonkow = "".join(nazwy_czlonkow_table)
+        nazwy_czlonkow = nazwy_czlonkow[:-2]
+        
+        # Clear existing data in the Treeview
+        for item in self.tree_member.get_children():
+            self.tree_member.delete(item)
+
+        # Insert retrieved data into the Treeview       
+        self.tree_member.insert("", "end", values=[ulica, numer, numer_pola_namiotowego, nazwy_czlonkow])
 
         self.close_database_connection()
 
@@ -340,7 +336,11 @@ class DatabaseViewer:
         except (Exception, psycopg2.Error) as error:
             messagebox.showerror("Error", f"Error while connecting to PostgreSQL: {error}")
 
-        
+    def close_database_connection(self):
+        # Close the cursor and connection
+        self.cursor.close()
+        self.connection.close()
+
 
 if __name__ == "__main__":
     root = tk.Tk()

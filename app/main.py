@@ -103,6 +103,7 @@ class DatabaseViewer:
 
         # Insert Button
         self.insert_button = tk.Button(self.root, text="Zarejstruj uczestnika", command=self.insert_member)
+        self.delete_button = tk.Button(self.root, text="Usuń uczestnika", command=self.delete_member)
 
         # Grid layout for data insertion widgets
         self.insert_info_label.grid(row=7, column=0, columnspan=2, pady=10)
@@ -117,6 +118,7 @@ class DatabaseViewer:
         self.member_role_label.grid(row=12, column=0, padx=5, pady=5)
         self.member_role_entry.grid(row=12, column=1, padx=5, pady=5)
         self.insert_button.grid(row=13, column=0, padx=5, pady=5)
+        self.delete_button.grid(row=13, column=1, padx=5, pady=5)
 
     def create_search_widgets(self):
         self.search_info_label =  tk.Label(self.root, text="Wyszkuja informacja dla członka:")
@@ -211,6 +213,27 @@ class DatabaseViewer:
 
 
         self.close_database_connection()
+
+    def delete_member(self):
+        if not self.member_name_entry.get() and not self.member_surname_entry.get():
+            messagebox.showerror("Error", "Brak wypełnienia pola Imie i Nazwisko!")
+            return
+        self.connect_to_database()
+        self.cursor.execute("SELECT czlonek_id FROM projekt.czlonkowie WHERE imie = %s AND nazwisko = %s", (self.member_name_entry.get(), self.member_surname_entry.get(),))
+
+        czlonek_id = self.cursor.fetchone()[0]
+        self.cursor.execute("SELECT team_id from projekt.zespoly where szef_zespolu = %s", (czlonek_id,))
+        if self.cursor.fetchone():
+            messagebox.showerror("Error", "Nie można usunąć szefa zespołu!")
+            return
+        print("CZLONEK ID: ", czlonek_id)
+        
+        self.cursor.execute("DELETE FROM projekt.nocleg_czlonkow WHERE czlonek_id = %s", (czlonek_id,))
+        self.cursor.execute("DELETE FROM projekt.czlonkowie WHERE czlonek_id = %s", (czlonek_id,))  # Fix: Use 'czlonek_id' instead of 'imie' and 'nazwisko'
+        self.connection.commit()
+
+        self.close_database_connection()
+        messagebox.showinfo("Info", "Członek usunięty!")
 
     def display_member(self):
         self.tree.grid_forget()

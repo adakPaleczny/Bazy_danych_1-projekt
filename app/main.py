@@ -220,10 +220,14 @@ class DatabaseViewer:
         self.connect_to_database()
         self.cursor.execute("SELECT nocleg_ID from projekt.nocleg_czlonkow n join projekt.czlonkowie c on c.czlonek_ID = n.czlonek_ID where c.imie = %s and c.nazwisko = %s", (self.name_entry.get(),self.surname_entry.get(),)) 
 
-        nocleg_id = self.cursor.fetchone()[0]
+        nocleg_id_result = self.cursor.fetchone()
+        if not nocleg_id_result:
+            messagebox.showerror("Error", "Nie znaleziono takiego członka!")
+            return
+        
+        nocleg_id = nocleg_id_result[0]
 
         self.cursor.execute("SELECT c.imie, c.nazwisko from projekt.czlonkowie c join projekt.nocleg_czlonkow n on c.czlonek_ID = n.czlonek_ID WHERE nocleg_ID = %s", (nocleg_id,))
-        czlonkowie = []
         czlonkowie = self.cursor.fetchall()
 
         self.cursor.execute("SELECT ulica, numer, numer_pola_namiotowego FROM projekt.nocleg WHERE nocleg_id = %s", (nocleg_id,))

@@ -89,8 +89,6 @@ class DatabaseViewer:
         self.insert_info_label =  tk.Label(self.root, text="Rejstracja nowych członków: ")
         self.insert_info_label.config(font=('Helvatical bold',20))
         # Entry Widgets for data insertion
-        self.member_id_label = tk.Label(self.root, text="Member ID")
-        self.member_id_entry = tk.Entry(self.root)
         self.member_name_label = tk.Label(self.root, text="Imie")
         self.member_name_entry = tk.Entry(self.root)
         self.member_surname_label = tk.Label(self.root, text="Nazwisko")
@@ -107,18 +105,16 @@ class DatabaseViewer:
 
         # Grid layout for data insertion widgets
         self.insert_info_label.grid(row=7, column=0, columnspan=2, pady=10)
-        self.member_id_label.grid(row=8, column=0, padx=5, pady=5)
-        self.member_id_entry.grid(row=8, column=1, padx=5, pady=5)
-        self.member_name_label.grid(row=9, column=0, padx=5, pady=5)
-        self.member_name_entry.grid(row=9, column=1, padx=5, pady=5)
-        self.member_surname_label.grid(row=10, column=0, padx=5, pady=5)
-        self.member_surname_entry.grid(row=10, column=1, padx=5, pady=5)
-        self.member_team_label.grid(row=11, column=0, padx=5, pady=5)
-        self.member_team_entry.grid(row=11, column=1, padx=5, pady=5)
-        self.member_role_label.grid(row=12, column=0, padx=5, pady=5)
-        self.member_role_entry.grid(row=12, column=1, padx=5, pady=5)
-        self.insert_button.grid(row=13, column=0, padx=5, pady=5)
-        self.delete_button.grid(row=13, column=1, padx=5, pady=5)
+        self.member_name_label.grid(row=8, column=0, padx=5, pady=5)
+        self.member_name_entry.grid(row=8, column=1, padx=5, pady=5)
+        self.member_surname_label.grid(row=9, column=0, padx=5, pady=5)
+        self.member_surname_entry.grid(row=9, column=1, padx=5, pady=5)
+        self.member_team_label.grid(row=10, column=0, padx=5, pady=5)
+        self.member_team_entry.grid(row=10, column=1, padx=5, pady=5)
+        self.member_role_label.grid(row=11, column=0, padx=5, pady=5)
+        self.member_role_entry.grid(row=11, column=1, padx=5, pady=5)
+        self.insert_button.grid(row=12, column=0, padx=5, pady=5)
+        self.delete_button.grid(row=12, column=1, padx=5, pady=5)
 
     def create_search_widgets(self):
         self.search_info_label =  tk.Label(self.root, text="Wyszkuja informacja dla członka:")
@@ -182,22 +178,24 @@ class DatabaseViewer:
 
     def insert_member(self):
         # Retrieve values from entry widgets
-        id = self.member_id_entry.get()
         name = self.member_name_entry.get()
         surname = self.member_surname_entry.get()
         role = self.member_role_entry.get()
         team_name = self.member_team_entry.get()
         self.connect_to_database()
 
-        if not all([id, name, surname,  team_name]):
+        if not all([name, surname,  team_name]):
             messagebox.showerror("Error", "Wszystkie pola poza 'Rola' muszą być wypełnione!")
             return
+        
+        self.cursor.execute("SELECT MAX(czlonek_id) FROM projekt.czlonkowie")
+        max_id = self.cursor.fetchone()[0]
         
         # Execute a query to insert data into the table (replace with your query)
         try:
             self.cursor.execute("SELECT team_id FROM projekt.zespoly WHERE nazwa = %s", (team_name,))
             team_id = self.cursor.fetchone()[0] 
-            self.cursor.execute("INSERT INTO projekt.czlonkowie VALUES (%s, %s, %s, %s, %s);", (id, name, surname, role,team_id))
+            self.cursor.execute("INSERT INTO projekt.czlonkowie VALUES (%s, %s, %s, %s, %s);", (str(max_id+1), name, surname, role,team_id))
             self.connection.commit()
             messagebox.showinfo("Info", "Członek dodany!")
 
@@ -205,7 +203,6 @@ class DatabaseViewer:
             messagebox.showerror("Error", f"Wystąpił błąd przy dodawaniu członka: {e}")
 
         # # Clear entry fields
-        self.member_id_entry.delete(0, tk.END)
         self.member_name_entry.delete(0, tk.END)
         self.member_surname_entry.delete(0, tk.END)
         self.member_team_entry.delete(0, tk.END)
@@ -226,7 +223,6 @@ class DatabaseViewer:
         if self.cursor.fetchone():
             messagebox.showerror("Error", "Nie można usunąć szefa zespołu!")
             return
-        print("CZLONEK ID: ", czlonek_id)
         
         self.cursor.execute("DELETE FROM projekt.nocleg_czlonkow WHERE czlonek_id = %s", (czlonek_id,))
         self.cursor.execute("DELETE FROM projekt.czlonkowie WHERE czlonek_id = %s", (czlonek_id,))  # Fix: Use 'czlonek_id' instead of 'imie' and 'nazwisko'
@@ -234,6 +230,11 @@ class DatabaseViewer:
 
         self.close_database_connection()
         messagebox.showinfo("Info", "Członek usunięty!")
+
+        self.member_name_entry.delete(0, tk.END)
+        self.member_surname_entry.delete(0, tk.END)
+        self.member_team_entry.delete(0, tk.END)
+        self.member_role_entry.delete(0, tk.END)
 
     def display_member(self):
         self.tree.grid_forget()
@@ -367,6 +368,5 @@ class DatabaseViewer:
 
 if __name__ == "__main__":
     root = tk.Tk()
-    # root.geometry("1200x800")
     app = DatabaseViewer(root)
     root.mainloop()

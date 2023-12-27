@@ -15,5 +15,5 @@ Aplikacja bazodanowa obsługująca zawody inżynierskie Formula Student Polska. 
 
 Instalowanie potrzebnych bibliotek:
 ``` bash
-    pip install -r requirements.txt
+pip install -r requirements.txt
 ```

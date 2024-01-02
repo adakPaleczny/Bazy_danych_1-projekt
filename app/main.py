@@ -45,7 +45,7 @@ class DatabaseViewer:
 
         # Configure columns
         self.tree.column("#0", width=0, stretch=tk.NO)  # Hidden ID column
-        self.tree.column("Nazwa",anchor=tk.W, width=300)  # Hidden ID column
+        self.tree.column("Nazwa",anchor=tk.W, width=300)
         self.tree.column("Uczelnia", anchor=tk.W, width=200)
         self.tree.column("Kraj", anchor=tk.W, width=100)
         self.tree.column("Liczba_czlonkow", anchor=tk.W, width=160) 
@@ -83,11 +83,14 @@ class DatabaseViewer:
         # Grid layout for Treeviews
         self.tree_team_members.grid(row=6, column=0, columnspan=3, padx=10, pady=10)
 
+        # Hide grip to display empty rows
         self.tree_team_members.grid_forget()
   
     def create_member_insert(self):
+        # Insertion Label
         self.insert_info_label =  tk.Label(self.root, text="Rejstracja nowych członków: ")
         self.insert_info_label.config(font=('Helvatical bold',20))
+        
         # Entry Widgets for data insertion
         self.member_name_label = tk.Label(self.root, text="Imie")
         self.member_name_entry = tk.Entry(self.root)
@@ -117,6 +120,7 @@ class DatabaseViewer:
         self.delete_button.grid(row=12, column=1, padx=5, pady=5)
 
     def create_search_widgets(self):
+        # Search Label 
         self.search_info_label =  tk.Label(self.root, text="Wyszkuja informacja dla członka:")
         self.search_info_label.config(font=('Helvatical bold',20))
         self.name_label = tk.Label(self.root, text="Wprowadź imie uczestnika: ")
@@ -126,7 +130,7 @@ class DatabaseViewer:
 
         self.get_info_button = tk.Button(self.root, text="Nocleg", command=self.get_info_sleeping)
 
-
+        # Grid layout for data insertion widgets
         self.search_info_label.grid(row=14, column=0, columnspan=2, pady=10)   
         self.name_label.grid(row=15, column=0, padx=5, pady=5)
         self.name_entry.grid(row=15, column=1, padx=5, pady=5)
@@ -212,9 +216,11 @@ class DatabaseViewer:
         self.close_database_connection()
 
     def delete_member(self):
+        # Checking if all important fields are filled
         if not self.member_name_entry.get() and not self.member_surname_entry.get():
             messagebox.showerror("Error", "Brak wypełnienia pola Imie i Nazwisko!")
             return
+        
         self.connect_to_database()
         self.cursor.execute("SELECT czlonek_id FROM projekt.czlonkowie WHERE imie = %s AND nazwisko = %s", (self.member_name_entry.get(), self.member_surname_entry.get(),))
 
@@ -231,12 +237,14 @@ class DatabaseViewer:
         self.close_database_connection()
         messagebox.showinfo("Info", "Członek usunięty!")
 
+        # Clear entry fields
         self.member_name_entry.delete(0, tk.END)
         self.member_surname_entry.delete(0, tk.END)
         self.member_team_entry.delete(0, tk.END)
         self.member_role_entry.delete(0, tk.END)
 
     def display_member(self):
+        # Hide the other Treeview
         self.tree.grid_forget()
         self.tree_team_members.grid(row=6, column=0, columnspan=3, padx=10, pady=10)
 
@@ -257,6 +265,7 @@ class DatabaseViewer:
         self.close_database_connection()
 
     def display_team(self):
+        # Hide the other Treeview
         self.tree_team_members.grid_forget()
         self.tree.grid(row=6, column=0, columnspan=2, padx=10, pady=10)
         self.connect_to_database()
@@ -276,6 +285,8 @@ class DatabaseViewer:
 
     def display_results(self):
         self.connect_to_database()
+
+        # Execute a query that gets results from the table
         self.cursor.execute("SELECT wynik, zespol, numer, bolid from projekt.wyniki")
         rows = self.cursor.fetchall()
 
@@ -290,6 +301,7 @@ class DatabaseViewer:
     def display_cv_results(self):
         self.connect_to_database()
 
+        # Execute a query that gets results from the table with "CV" class
         self.cursor.execute("SELECT ROW_NUMBER() OVER (ORDER BY wynik) as wynik, zespol, numer, bolid FROM projekt.wyniki where typ = 'CV';")
 
         for row in self.tree_results.get_children():
@@ -303,6 +315,7 @@ class DatabaseViewer:
     def display_ev_results(self):
         self.connect_to_database()
 
+        # Execute a query that gets results from the table with "EV" class
         self.cursor.execute("SELECT ROW_NUMBER() OVER (ORDER BY wynik) as wynik, zespol, numer, bolid FROM projekt.wyniki where typ = 'EV';")
 
         for row in self.tree_results.get_children():
@@ -315,6 +328,7 @@ class DatabaseViewer:
 
     def get_info_sleeping(self):
         self.connect_to_database()
+        # Getting nocleg_id from user that is needed to get information about sleeping
         self.cursor.execute("SELECT nocleg_ID from projekt.nocleg_czlonkow n join projekt.czlonkowie c on c.czlonek_ID = n.czlonek_ID where c.imie = %s and c.nazwisko = %s", (self.name_entry.get(),self.surname_entry.get(),)) 
 
         nocleg_id_result = self.cursor.fetchone()
@@ -324,9 +338,11 @@ class DatabaseViewer:
         
         nocleg_id = nocleg_id_result[0]
 
+        # Getting information people sleeping in the same place
         self.cursor.execute("SELECT c.imie, c.nazwisko from projekt.czlonkowie c join projekt.nocleg_czlonkow n on c.czlonek_ID = n.czlonek_ID WHERE nocleg_ID = %s", (nocleg_id,))
         czlonkowie = self.cursor.fetchall()
 
+        # Getting information about sleeping place
         self.cursor.execute("SELECT ulica, numer, numer_pola_namiotowego FROM projekt.nocleg WHERE nocleg_id = %s", (nocleg_id,))
         ulica, numer, numer_pola_namiotowego = self.cursor.fetchone()
         

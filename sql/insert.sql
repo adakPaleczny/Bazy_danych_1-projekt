@@ -1,3 +1,16 @@
+insert into projekt.zespoly
+        values (1, 'AGH Racing', 'AGH Cracow', 'PL', 1),
+        (2, 'TUfast Racing Team e-Technology', 'München TU', 'DE', 7),
+        (3, 'Ecurie Aix Formula Student Team RWTH Aachen e.V.', 'Aachen RWTH', 'DE', 9),
+        (4, 'NTHU Racing', 'Hsinchu NTHU', 'TW', 11),
+        (5, 'TU Darmstadt Racing Team e.V.', 'Darmstadt TU', 'DE', 26),
+        (6, 'StarkStrom Augsburg', 'Augsburg UAS', 'DE', 36),
+        (7, 'Mainfranken Racing', 'Schweinfurt UAS', 'DE', 42),
+        (8, 'GreenTeam Uni Stuttgart', 'Stuttgart U', 'DE', 30),
+        (9, 'Fast Forest', 'Deggendorf IT', 'DE', 27),
+        (10, 'Revolve NTNU', 'Trondheim NTNU', 'NO', 17),
+        (11, 'Dynamis PRC', 'Milano PT', 'IT', 19);
+        
 insert into projekt.bolidy(Numer_startowy, TEAM_ID, typ, nazwa, wynik_overal) values
             (43, 1, 'EV', 'LEM',1),
             (23, 3, 'EV', 'ELECTRIC_RUN',4),
@@ -11,18 +24,6 @@ insert into projekt.bolidy(Numer_startowy, TEAM_ID, typ, nazwa, wynik_overal) va
             (140, 9, 'EV', 'Sonic Surge', 10),
             (199, 7, 'CV', 'Cyclone Charger', 11);
 
-insert into projekt.zespoly
-        values (1, 'AGH Racing', 'AGH Cracow', 'PL', 1),
-        (2, 'TUfast Racing Team e-Technology', 'München TU', 'DE', 7),
-        (3, 'Ecurie Aix Formula Student Team RWTH Aachen e.V.', 'Aachen RWTH', 'DE', 9),
-        (4, 'NTHU Racing', 'Hsinchu NTHU', 'TW', 11),
-        (5, 'TU Darmstadt Racing Team e.V.', 'Darmstadt TU', 'DE', 26),
-        (6, 'StarkStrom Augsburg', 'Augsburg UAS', 'DE', 36),
-        (7, 'Mainfranken Racing', 'Schweinfurt UAS', 'DE', 42),
-        (8, 'GreenTeam Uni Stuttgart', 'Stuttgart U', 'DE', 30),
-        (9, 'Fast Forest', 'Deggendorf IT', 'DE', 27),
-        (10, 'Revolve NTNU', 'Trondheim NTNU', 'NO', 17),
-        (11, 'Dynamis PRC', 'Milano PT', 'IT', 19);
 
 insert into projekt.czlonkowie
         values  (1, 'Jan', 'Kowalski', 'CEO', 1),

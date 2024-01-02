@@ -53,10 +53,11 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER check_if_too_much_people
-BEFORE INSERT OR UPDATE ON nocleg_czlonkow
+BEFORE INSERT OR UPDATE ON projekt.nocleg_czlonkow
 FOR EACH ROW EXECUTE PROCEDURE check_if_too_much_people();
 
 
+-- Dodawnia noclegu dla nowego członka
 CREATE OR REPLACE FUNCTION add_sleeping_for_new_user()
 RETURNS TRIGGER AS $$
     DECLARE

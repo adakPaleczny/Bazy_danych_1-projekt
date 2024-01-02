@@ -15,7 +15,6 @@ create table Zespoly(
     uczelnia                TEXT NOT NULL,
     kraj                    TEXT NOT NULL,
     szef_zespolu            INTEGER NOT NULL,
-    -- CONSTRAINT szef_fk      FOREIGN KEY (szef_zespolu) REFERENCES czlonkowie(czlonek_ID),
     CONSTRAINT team_pk      PRIMARY KEY(TEAM_ID)
 );
 

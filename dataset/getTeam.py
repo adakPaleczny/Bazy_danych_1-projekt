@@ -10,7 +10,7 @@ with open('teamy.csv', 'r') as file:
             country, uni, team_name, num, pit, insp = array
 
             # Do something with the country, name, university, and car number
-            print(f"({iter}, {team_name}, {uni}, {country}, )")
+            # print(f"({iter}, {team_name}, {uni}, {country}, )")
             iter = iter + 1
         else:
             first = False

@@ -230,12 +230,20 @@ class DatabaseViewer:
             messagebox.showerror("Error", "Nie można usunąć szefa zespołu!")
             return
         
+        self.cursor.execute("SELECT team_id FROM projekt.czlonkowie WHERE imie = %s AND nazwisko = %s", (self.member_name_entry.get(), self.member_surname_entry.get(),))
+        team_id = self.cursor.fetchone()[0]
+
         self.cursor.execute("DELETE FROM projekt.nocleg_czlonkow WHERE czlonek_id = %s", (czlonek_id,))
         self.cursor.execute("DELETE FROM projekt.czlonkowie WHERE czlonek_id = %s", (czlonek_id,))  # Fix: Use 'czlonek_id' instead of 'imie' and 'nazwisko'
         self.connection.commit()
 
-        self.close_database_connection()
         messagebox.showinfo("Info", "Członek usunięty!")
+
+        self.cursor.execute("SELECT COUNT(czlonek_id) FROM projekt.czlonkowie WHERE team_id = %s", (team_id,))
+        if self.cursor.fetchone()[0] == 0:
+            messagebox.showinfo("Info", "Zespół został usunięty, za mało członków!")
+
+        self.close_database_connection()
 
         # Clear entry fields
         self.member_name_entry.delete(0, tk.END)

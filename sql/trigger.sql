@@ -102,3 +102,37 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER add_sleeping_for_new_user
 AFTER INSERT ON projekt.czlonkowie
 FOR EACH ROW EXECUTE PROCEDURE add_sleeping_for_new_user();
+
+--usuwanie członków i teamu
+CREATE OR REPLACE FUNCTION delete_team_if_too_less_members()
+RETURNS TRIGGER AS $$
+    DECLARE
+        team_id_ INTEGER;
+        members_count INTEGER;
+        last_member INTEGER;
+    BEGIN
+        -- Get new team_id from insert
+        SELECT team_id INTO team_id_ from projekt.czlonkowie where team_id = OLD.team_id;
+
+        -- Get empty places
+        SELECT count(*) INTO members_count
+        FROM projekt.czlonkowie 
+        WHERE team_id = team_id_;
+        RAISE NOTICE 'Members count: %', members_count;
+
+        IF members_count = 1 THEN
+            SELECT czlonek_id INTO last_member FROM projekt.czlonkowie WHERE team_id = team_id_;
+            DELETE FROM projekt.nocleg_czlonkow WHERE czlonek_id = last_member;
+            DELETE FROM projekt.czlonkowie WHERE czlonek_id = last_member;
+            DELETE FROM projekt.bolidy WHERE team_id = team_id_;
+            DELETE FROM projekt.zespoly WHERE team_id = team_id_;
+            RETURN OLD;
+        END IF;
+
+        RETURN OLD;
+    END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER delete_team_if_too_less_members
+AFTER DELETE ON projekt.czlonkowie
+FOR EACH ROW EXECUTE PROCEDURE delete_team_if_too_less_members();

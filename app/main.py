@@ -6,7 +6,7 @@ import psycopg2
 class DatabaseViewer:
     def __init__(self, root):
         self.root = root
-        self.root.title("FS Poland Information System")
+        self.root.title("Formuła Student Polska System Informacji")
 
         self.create_button_widgets()
         self.create_teams_display_widgets()
@@ -22,6 +22,7 @@ class DatabaseViewer:
         self.cv_button = tk.Button(self.root, text="CV", command=self.display_cv_results)
         self.ev_button = tk.Button(self.root, text="EV", command=self.display_ev_results)
         self.overall_button = tk.Button(self.root, text="OVERALL", command=self.display_results)
+        self.config_button = tk.Button(self.root, text="Załaduj przykładowe dane", command=self.load_example_data)
     
         self.overall_test = tk.Label(self.root, text="WYNIKI ZAWODÓW")
         self.overall_test.config(font=('Helvatical bold',15))
@@ -30,6 +31,7 @@ class DatabaseViewer:
         self.info_label.config(font=('Helvatical bold',15))
 
         # Grid layout for connection widgets
+        self.config_button.grid(row=4, column=1, columnspan=1, pady=10)
         self.info_label.grid(row=4, column=0, columnspan=1, pady=10)
         self.teams_button.grid(row=5, column=0, columnspan=1, pady=10)
         self.members_button.grid(row=5, column=1, columnspan=1, pady=10)
@@ -180,6 +182,34 @@ class DatabaseViewer:
         # Grid layout for Treeviews
         self.tree_results.grid(row=6, column=15, columnspan=3, padx=10, pady=10)
 
+    def load_example_data(self):
+        self.delete_all_data()
+
+        self.execute_sql_script("table_create.sql")
+        self.execute_sql_script("insert.sql")
+        self.execute_sql_script("view.sql")
+        self.execute_sql_script("trigger.sql")
+
+        messagebox.showinfo("Info", "Przykładowe dane zostały załadowane!")
+            
+    def delete_all_data(self):
+        self.connect_to_database()
+        self.cursor.execute("DROP SCHEMA IF EXISTS projekt CASCADE")
+        self.connection.commit()
+        self.close_database_connection()
+
+    def execute_sql_script(self, script_name):
+        self.connect_to_database()
+
+        # Read the SQL script from file
+        with open("../sql/" + script_name, "r") as file:
+            sql_script = file.read()
+
+        # Execute the SQL script
+        self.cursor.execute(sql_script)
+        self.connection.commit()
+        self.close_database_connection()
+
     def insert_member(self):
         # Retrieve values from entry widgets
         name = self.member_name_entry.get()
@@ -217,7 +247,7 @@ class DatabaseViewer:
 
     def delete_member(self):
         # Checking if all important fields are filled
-        if not self.member_name_entry.get() and not self.member_surname_entry.get():
+        if not self.member_name_entry.get() or not self.member_surname_entry.get():
             messagebox.showerror("Error", "Brak wypełnienia pola Imie i Nazwisko!")
             return
         

@@ -113,7 +113,7 @@ insert into projekt.nocleg values
                 (19,'Spruce Lane',  565, 19),
                 (20,'Maple Road',  787, 20);
 
-insert into nocleg_czlonkow values
+insert into projekt.nocleg_czlonkow values
                 (1,1),
                 (1,2),
                 (1,3),

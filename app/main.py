@@ -308,7 +308,7 @@ class DatabaseViewer:
         self.tree.grid(row=6, column=0, columnspan=2, padx=10, pady=10)
         self.connect_to_database()
          # Execute a query to retrieve data from the table (replace with your query)
-        self.cursor.execute("SELECT z.nazwa, z.uczelnia, z.kraj, COUNT(c.czlonek_id) FROM projekt.zespoly z JOIN projekt.czlonkowie c on c.team_id = z.team_id GROUP BY nazwa, uczelnia, kraj;")
+        self.cursor.execute("SELECT z.nazwa, z.uczelnia, z.kraj, COUNT(c.czlonek_id) as ilosc_czlonkow FROM projekt.zespoly z JOIN projekt.czlonkowie c on c.team_id = z.team_id GROUP BY nazwa, uczelnia, kraj HAVING COUNT(c.czlonek_id) > 1;")
         rows = self.cursor.fetchall()
 
         # Clear existing data in the Treeview

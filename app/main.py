@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
+from pathlib import Path
 import psycopg2
 
 class DatabaseViewer:
@@ -202,7 +203,8 @@ class DatabaseViewer:
         self.connect_to_database()
 
         # Read the SQL script from file
-        with open("../sql/" + script_name, "r") as file:
+        path = Path(__file__).parent.absolute()
+        with open(str(path) + "/../sql/" + script_name, "r") as file:
             sql_script = file.read()
 
         # Execute the SQL script

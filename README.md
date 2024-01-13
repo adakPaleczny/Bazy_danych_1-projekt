@@ -35,4 +35,4 @@ W celu sprawdzenia działania programu nie jest wymagana konfiguracja bazy danyc
 4. ***view.sql*** -> tworzy widok potrzebny do działania aplikacji
 
 ## Dokumentacja
-Dokumentacja do projektu znajduje się w katalogu docs. Tam również znajdują się szczegóły co do implementacji oraz struktury bazy danych.
+Dokumentacja do projektu znajduje się w katalogu **docs**. Tam również znajdują się szczegóły co do implementacji oraz struktury bazy danych.

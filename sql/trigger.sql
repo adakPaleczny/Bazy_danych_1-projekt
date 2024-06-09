@@ -39,9 +39,9 @@ DECLARE
     nocleg_id_get INTEGER;
 BEGIN
     --GET MAX PEOPLE
-    SELECT INTO nocleg_id_get numer_pola_namiotowego from nocleg WHERE nocleg_ID = NEW.nocleg_ID;
-    SELECT INTO max_people ilosc_osob FROM pola_namiotowe WHERE pole_namiotowe_id = nocleg_id_get;
-    SELECT into current_people COUNT(*) FROM nocleg_czlonkow WHERE nocleg_ID = NEW.nocleg_ID;
+    SELECT INTO nocleg_id_get numer_pola_namiotowego from projekt.nocleg WHERE nocleg_ID = NEW.nocleg_ID;
+    SELECT INTO max_people ilosc_osob FROM projekt.pola_namiotowe WHERE pole_namiotowe_id = nocleg_id_get;
+    SELECT into current_people COUNT(*) FROM projekt.nocleg_czlonkow WHERE nocleg_ID = NEW.nocleg_ID;
 
     IF current_people >= max_people THEN
         RAISE EXCEPTION 'Za dużo ludzi na polu namiotowym.';
